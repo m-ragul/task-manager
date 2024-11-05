@@ -1,0 +1,30 @@
+- hosts: webservers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install necessary packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - git
+        - nodejs
+        - npm
+
+    - name: Clone the repository
+      git:
+        repo: 'https://github.com/user/task-manager.git'
+        dest: /var/www/task-manager
+
+    - name: Install npm dependencies
+      npm:
+        path: /var/www/task-manager
+        state: present
+
+    - name: Start the application
+      shell: npm start
+      args:
+        chdir: /var/www/task-manager
